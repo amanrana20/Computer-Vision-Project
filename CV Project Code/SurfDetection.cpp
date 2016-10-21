@@ -15,7 +15,6 @@ int numberOfMatchingPoints = 15;  // This is the size of 'good_matches' vector a
 
 void getReferenceImage() {
     
-    /*
      // Setting the videoCapture object 'cap' to receive feed from the webcam i.e. (0).
      VideoCapture cap(0);
      
@@ -38,7 +37,6 @@ void getReferenceImage() {
      } // end if (waitKey(30) >= 0)
      
      } // end while(condition == true)
-     */
     
     refImage = imread("/Users/amanrana/Desktop/refImage.jpg");
     if (refImage.empty() == false) {
@@ -118,43 +116,42 @@ bool matchFeatures(Mat _frame) {
     if (good_matches.size() > 0) {
         
         return true;
-        //drawMatches(refImage, refKeyPoints, _frame, targetPoints, good_matches, img_matches, Scalar(255,255,255));
-        //drawLinesAroundDetectedObject(good_matches, _frame);
+        drawMatches(refImage, refKeyPoints, _frame, targetPoints, good_matches, img_matches, Scalar(255,255,255));
+        drawLinesAroundDetectedObject(good_matches, _frame);
         
-    }else { cout << "good_matches.size > 0 IS FALSE. Exiting..." << endl; return false; }
+    } else { cout << "good_matches.size > 0 IS FALSE. Exiting..." << endl; return false; }
 }
-/*
+
  void drawLinesAroundDetectedObject(vector<DMatch> good_matches, Mat _frame) {
  
- std::vector<Point2f> obj;
- std::vector<Point2f> scene;
+     std::vector<Point2f> obj;
+     std::vector<Point2f> scene;
+
+     for( int i = 0; i < good_matches.size(); i++ ) {
+     //-- Get the keypoints from the good matches
+     obj.push_back( refKeyPoints[ good_matches[i].queryIdx ].pt );
+     scene.push_back( targetKeyPoints[ good_matches[i].trainIdx ].pt );
+     }
+
+     int centerX = 0, centerY = 0;
+
+     for (i = 0; i < good_matches.size(); i++) {
+
+     centerX = (int)targetKeyPoints[ good_matches[i].trainIdx ].pt.x + centerX;
+     centerY = (int)targetKeyPoints[ good_matches[i].trainIdx ].pt.y + centerY;
+
+     }
+
+     centerX = int(centerX / i);  // averaging the X values after summation
+     centerY = int(centerY / i);  // averaging the Y values after summation
+
+     rectangle(_frame, Point2i(centerX - int(refImage.size().height / 8), centerY -
+     int(refImage.size().width / 8)), Point2i(centerX + int(refImage.size().height / 6), centerY +
+     int(refImage.size().width / 6)), Scalar(0,255,0), 2);
+
+     imshow( "Good Matches & Object detection", _frame );
  
- for( int i = 0; i < good_matches.size(); i++ ) {
- //-- Get the keypoints from the good matches
- obj.push_back( refKeyPoints[ good_matches[i].queryIdx ].pt );
- scene.push_back( targetKeyPoints[ good_matches[i].trainIdx ].pt );
  }
- 
- int centerX = 0, centerY = 0;
- 
- for (i = 0; i < good_matches.size(); i++) {
- 
- centerX = (int)targetKeyPoints[ good_matches[i].trainIdx ].pt.x + centerX;
- centerY = (int)targetKeyPoints[ good_matches[i].trainIdx ].pt.y + centerY;
- 
- }
- 
- centerX = int(centerX / i);  // averaging the X values after summation
- centerY = int(centerY / i);  // averaging the Y values after summation
- 
- rectangle(_frame, Point2i(centerX - int(refImage.size().height / 8), centerY -
- int(refImage.size().width / 8)), Point2i(centerX + int(refImage.size().height / 6), centerY +
- int(refImage.size().width / 6)), Scalar(0,255,0), 2);
- 
- imshow( "Good Matches & Object detection", _frame );
- 
- }
- */
 
 bool SurfMain(Mat detectedFrame) {
     
@@ -164,7 +161,7 @@ bool SurfMain(Mat detectedFrame) {
         cvtColor(detectedFrame, detectedFrame, CV_BGR2GRAY);
         
         // Resize the frame to (700,437)
-        //resize(detectedFrame, detectedFrame, Size(700, 437));
+        resize(detectedFrame, detectedFrame, Size(700, 437));
         
         // Perform SURF Detection on every frame
         return performSurfDetection(detectedFrame, false); // false - because the frame is not the reference Image
